@@ -1,7 +1,8 @@
-from flask import Flask
+import os
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
 @app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+def main():
+    return render_template("index.html")
