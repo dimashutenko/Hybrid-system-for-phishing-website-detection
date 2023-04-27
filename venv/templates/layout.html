@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+        <title>Phish</title>
+        {% block head %}{% endblock %}
+    </head>
+    <body>
+
+        {% block body %}{% endblock %}
+
+        <script src="./static/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

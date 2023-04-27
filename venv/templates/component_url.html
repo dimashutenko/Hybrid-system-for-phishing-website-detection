@@ -15,14 +15,14 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                  <a class="nav-link active" href="/">Home </a>
+                  <a class="nav-link" href="/">Home</a>
                 </li>
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Components
                   </a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="/component1">Component 1: URL</a>
+                    <a class="dropdown-item active" href="/component1">Component 1: URL</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#">Component 2: DOM</a>
                     <div class="dropdown-divider"></div>
@@ -34,7 +34,15 @@
           </div>
         </nav>
         <div class="container" style="height:200vh">
-          <h2>Home</h2>
+          <h2>Component 1: URL </h2>
+
+          <script>
+              POST https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyD5_odg6Etmv_f5coTMEHJpm6GeUDIXFcs HTTP/1.1
+  Content-Type: application/json
+
+
+  API key: AIzaSyD5_odg6Etmv_f5coTMEHJpm6GeUDIXFcs
+          </script>
         </div>
 
 {% endblock %}
