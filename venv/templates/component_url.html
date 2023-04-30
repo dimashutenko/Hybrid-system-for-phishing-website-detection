@@ -35,14 +35,47 @@
         </nav>
         <div class="container" style="height:200vh">
           <h2>Component 1: URL </h2>
+          <input autocomplete="off" autofocus placeholder="link" type="search">
+          <p>{{ link }}</p>
 
           <script>
-              POST https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyD5_odg6Etmv_f5coTMEHJpm6GeUDIXFcs HTTP/1.1
-  Content-Type: application/json
 
+            let input = document.querySelector('input');
+            input.addEventListener('input', async function() {
+                let response = await fetch('/component1?link=' + input.value);
+                let link = await response.text();
+                document.querySelector('p').innerHTML = link;
+            });
+
+           </script>
+
+
+
+<!--
+              https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyD5_odg6Etmv_f5coTMEHJpm6GeUDIXFcs
+
+              body:
+                {
+                  "client": {
+                    "clientId":      "test_1_0_thesis",
+                    "clientVersion": "1.5.2.3"
+                  },
+                  "threatInfo": {
+                    "threatTypes":      ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE"],
+                    "platformTypes":    ["ANY_PLATFORM"],
+                    "threatEntryTypes": ["URL"],
+                    "threatEntries": [
+                      {"url": "https://www.ysor.fit/"},
+                      {"url": "http://cs42041.tw1.ru/"},
+                      {"url": "http://whattsap.xyz/"}
+                    ]
+                  }
+                }
 
   API key: AIzaSyD5_odg6Etmv_f5coTMEHJpm6GeUDIXFcs
-          </script>
+
+  -->
+
         </div>
 
 {% endblock %}
