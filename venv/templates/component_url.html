@@ -42,7 +42,7 @@
 
             let input = document.querySelector('input');
             input.addEventListener('input', async function() {
-                let response = await fetch('/component1?link=' + input.value);
+                let response = await fetch('/url_check?link=' + input.value);
                 let link = await response.text();
                 document.querySelector('p').innerHTML = link;
             });
