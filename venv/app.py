@@ -14,12 +14,12 @@ def component_url():
     return render_template("component_url.html")
 
 
-@app.route("/url_check")
-def url_check():
-    link = request.args.get("link")
-    if not link:
-        link = ''
-    return render_template("url_check.html", link=link)
+# @app.route("/url_check")
+# def url_check():
+#     link = request.args.get("link")
+#     if not link:
+#         link = ''
+#     return render_template("url_check.html", link=link)
 
 
 if __name__ == '__main__':
