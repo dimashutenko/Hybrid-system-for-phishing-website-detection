@@ -14,6 +14,11 @@ def component_url():
     return render_template("component_url.html")
 
 
+@app.route("/component2")
+def component_dom():
+    return render_template("component_dom.html")
+
+
 # @app.route("/url_check")
 # def url_check():
 #     link = request.args.get("link")
