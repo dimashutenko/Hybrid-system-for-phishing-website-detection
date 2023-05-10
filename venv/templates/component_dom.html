@@ -36,21 +36,35 @@
         <div class="container">
           <h2>Component 2: DOM </h2>
           <input autocomplete="off" autofocus placeholder="link" type="search">
-          <h5 class="warning"> </h5>
+          <h5 class="check" id="check_1">Check 1:</h5>
           <p> </p>
 
           <script>
 
             let input = document.querySelector('input');
             input.addEventListener('input', async function() {
+              var myHeaders = new Headers();
+              myHeaders.append("Content-Type", "application/json");
+
+              var raw = "{ 'client': {'clientId':'Dmytro_Shutenko','clientVersion':'1.0.1'}, 'threatInfo': {'threatTypes':['MALWARE', 'SOCIAL_ENGINEERING', 'UNWANTED_SOFTWARE'], 'platformTypes':['ANY_PLATFORM'],'threatEntryTypes': ['URL'], 'threatEntries': [ {'url': '" + input.value + "'} ] } }";
+
+              // console.log(raw);
+
+              var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+              };
 
 
-
+              document.querySelector('p').innerHTML = await fetch("https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyD5_odg6Etmv_f5coTMEHJpm6GeUDIXFcs", requestOptions)
+                .then(response => response.text());
 
               if(document.querySelector('p').innerHTML.includes('matches')){
-                document.querySelector('h5.warning').innerHTML = "Google API match!";
+                document.querySelector('h5#check_1').innerHTML = "Check 1: Google API Blacklisted";
               } else {
-                document.querySelector('h5.warning').innerHTML = "";
+                document.querySelector('h5#check_1').innerHTML = "Check 1: Google API Blacklisted";
               }
             });
 
