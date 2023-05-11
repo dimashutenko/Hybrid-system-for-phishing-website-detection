@@ -1,5 +1,7 @@
 import os
 from flask import Flask, render_template, request
+from bs4 import BeautifulSoup
+import requests
 
 app = Flask(__name__)
 
@@ -16,7 +18,13 @@ def component_url():
 
 @app.route("/component2")
 def component_dom():
-    return render_template("component_dom.html")
+    url = request.args.get('url')
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    if soup:
+        return str(soup)
+    else:
+        return render_template("component_dom.html")
 
 
 # @app.route("/url_check")
