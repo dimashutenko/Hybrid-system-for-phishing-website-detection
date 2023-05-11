@@ -16,13 +16,16 @@ def component_url():
     return render_template("component_url.html")
 
 
-@app.route("/component2")
+@app.route("/component2", methods=["GET", "POST"])
 def component_dom():
     url = request.args.get('url')
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, 'html.parser')
-    if soup:
+    q = request.args.get("q")
+    if url:
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, 'html.parser')
         return str(soup)
+    elif q:
+        return q
     else:
         return render_template("component_dom.html")
 
