@@ -37,7 +37,7 @@
           <h2>Component 2: DOM </h2>
           <input autocomplete="off" autofocus placeholder="link" type="search">
           <h5 class="check" id="check_1">Check 1:</h5>
-          <p> </p>
+          <p style="display:none"> </p>
 
           <script>
 
@@ -48,7 +48,6 @@
 
               var raw = "{ 'client': {'clientId':'Dmytro_Shutenko','clientVersion':'1.0.1'}, 'threatInfo': {'threatTypes':['MALWARE', 'SOCIAL_ENGINEERING', 'UNWANTED_SOFTWARE'], 'platformTypes':['ANY_PLATFORM'],'threatEntryTypes': ['URL'], 'threatEntries': [ {'url': '" + input.value + "'} ] } }";
 
-              // console.log(raw);
 
               var requestOptions = {
                 method: 'POST',
@@ -64,7 +63,11 @@
               if(document.querySelector('p').innerHTML.includes('matches')){
                 document.querySelector('h5#check_1').innerHTML = "Check 1: Google API Blacklisted";
               } else {
-                document.querySelector('h5#check_1').innerHTML = "Check 1: Google API Blacklisted";
+                document.querySelector('h5#check_1').innerHTML = "Check 1: OK";
+              }
+
+              if(document.querySelector('input').innerHTML = ""){
+                document.querySelector('h5#check_1').innerHTML = "Check 1: ";
               }
             });
 
