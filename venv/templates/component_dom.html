@@ -22,9 +22,9 @@
                     Components
                   </a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item active" href="/component1">Component 1: URL</a>
+                    <a class="dropdown-item" href="/component1">Component 1: URL</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="/component2">Component 2: DOM</a>
+                    <a class="dropdown-item active" href="/component2">Component 2: DOM</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#">Component 3: Heuristics</a>
                   </div>
@@ -41,8 +41,10 @@
 
           <script>
 
+
             let input = document.querySelector('input');
             input.addEventListener('input', async function() {
+
               var myHeaders = new Headers();
               myHeaders.append("Content-Type", "application/json");
 
@@ -62,13 +64,15 @@
 
               if(document.querySelector('p').innerHTML.includes('matches')){
                 document.querySelector('h5#check_1').innerHTML = "Check 1: Google API Blacklisted";
-              } else {
+              }
+<!--              else if(input.value = ""){-->
+<!--                document.querySelector('h5#check_1').innerHTML = "Check 1: ";-->
+<!--              }-->
+              else {
                 document.querySelector('h5#check_1').innerHTML = "Check 1: OK";
               }
 
-              if(document.querySelector('input').innerHTML = ""){
-                document.querySelector('h5#check_1').innerHTML = "Check 1: ";
-              }
+
             });
 
            </script>
