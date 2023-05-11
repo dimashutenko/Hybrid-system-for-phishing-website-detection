@@ -7,8 +7,8 @@ function getSourceAsDOM(url) {
 }
 
 
-try {
 
+try {
 
 
 } catch (error) {

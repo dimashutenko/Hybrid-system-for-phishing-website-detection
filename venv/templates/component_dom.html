@@ -36,13 +36,16 @@
         <div class="container">
           <h2>Component 2: DOM </h2>
           <input autocomplete="off" autofocus placeholder="link" type="search">
-          <h5 class="check" id="check_1">Check 1:</h5>
+          <h5 class="check" id="check_1">Check 1: </h5>
           <p style="display:none"> </p>
+          <h5 class="check" id="check_2">Check 2: </h5>
 
           <script>
 
             try {
+
               let input = document.querySelector('input');
+
               input.addEventListener('input', async function() {
 
                 var myHeaders = new Headers();
@@ -79,11 +82,46 @@
 
 
 
-<!--                try {-->
-<!--                  console.log(getSourceAsDOM(input.value));-->
-<!--                } catch (e) {-->
-<!--                  console.log(e)-->
-<!--                }-->
+            try {
+
+              let input = document.querySelector('input');
+
+              input.addEventListener('input', async function() {
+                // console.log(getSourceAsDOM(input.value));
+
+debugger;
+                $.get(''+input.value+'', function(html) {
+                  console.log(html);
+                });
+
+
+/*
+                fetch(""+input.value+"")
+                  .then(function(response) {
+                      console.log(response.json());
+                      //return response.json();
+                  })
+                  .then(function(data) {
+                      //data is the parsed JSON object/array
+                      console.log(data)
+                  })
+                  .catch(function(err) {
+                      //write the full error object to the console
+                      console.error(err);
+
+                      //show the error message to the user
+                      //you could instead set the `.textContent` of some
+                      //DOM element you use to show errors
+                      alert(err.message);
+                  });
+
+*/
+
+              });
+
+            } catch (e) {
+                console.log(e)
+            }
 
            </script>
 
