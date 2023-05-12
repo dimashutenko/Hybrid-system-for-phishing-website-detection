@@ -25,15 +25,52 @@ def component_dom():
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
         # app.logger.debug(soup.prettify())
-        inputs = soup.find_all("input", attrs={"name": re.compile("name")})  # finds all the tags whose names contain "name"
+        inputs = soup.find_all("input", attrs={"name": re.compile("name")})  # finds all the input tags that have attribute "name" names contain value "name"
         inputs.append( soup.find_all("input", attrs={"name": re.compile("mail")}) )
         inputs.append( soup.find_all("input", attrs={"name": re.compile("login")}) )
         inputs.append( soup.find_all("input", attrs={"name": re.compile("id")}) )
         inputs.append( soup.find_all("input", attrs={"name": re.compile("phone")}) )
         inputs.append( soup.find_all("input", attrs={"name": re.compile("code")}) )
-        inputs_2 = list( filter(None, inputs) )
-        print("\n", inputs_2)
-        return render_template("component_dom.html", check_2 = str("Check 2: " + "?") ) # 
+        inputs_2 = list( filter(None, inputs) ) # remove all empty []
+        
+        # print("\n", inputs_2)
+
+        try:
+            if inputs_2[0]: # if list not empty
+                print("Check 2: <input>s detected, validation goes on")
+
+                a_tag_s = soup.find_all("a") 
+                #print(a_tag_s)
+                if a_tag_s:
+                    
+                    footer_tag = soup.find_all('footer')
+                    footer_tag.append( soup.find_all('div', class_= re.compile('footer')) )
+                    footer_tag.append( soup.find_all('div', id= re.compile('footer')) )
+                    footer_tag_s = list( filter(None, footer_tag) ) # remove all empty []
+                    print(footer_tag_s)
+
+                    # 3. перевірка адрес посилань в <footer> (атрибут “href” тегу <a> пустий або “#[будь що]” - підозра фішингу)
+                    # 4.  інформація про авторські права та контент тегу <title> (перевірка значень в білих списках)
+                    # 5.  “самоідентичність” сайту (якщо більша кількість посилань спрямовані на ресурси неафілійовані з доменом - підозра фішингу)
+
+
+                    return render_template("component_dom.html", check_2 = str("Check 2: <input> tags detected, validation goes on"), check_3 = str("Check 3:  <a> tags are detected, validation goes on") )
+                    
+
+
+                else:
+                    return render_template("component_dom.html", check_2 = str("Check 2: <input> tags detected, validation goes on"), check_3 = str("Check 3: not a single <a> is detected, PHISHING SUSPECTED") )
+            else:
+                return render_template("component_dom.html", check_2 = str("No <input> tags detected, validation stopped") )
+        except:
+            print("An exception occurred")
+            return render_template("component_dom.html", check_2 = str("Error, check logs") )
+
+        # if inputs_2[0]:
+        #     print("continue")
+        # else:
+        #     return render_template("component_dom.html", check_2 = str("No <input>s detected, validation stopped") )
+
     elif q:
         return q
     else:
