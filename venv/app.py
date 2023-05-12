@@ -2,6 +2,7 @@ import os
 from flask import Flask, render_template, request
 from bs4 import BeautifulSoup
 import requests
+import re
 
 app = Flask(__name__)
 
@@ -23,7 +24,16 @@ def component_dom():
     if url:
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
-        return str(soup)
+        # app.logger.debug(soup.prettify())
+        inputs = soup.find_all("input", attrs={"name": re.compile("name")})  # finds all the tags whose names contain "name"
+        inputs.append( soup.find_all("input", attrs={"name": re.compile("mail")}) )
+        inputs.append( soup.find_all("input", attrs={"name": re.compile("login")}) )
+        inputs.append( soup.find_all("input", attrs={"name": re.compile("id")}) )
+        inputs.append( soup.find_all("input", attrs={"name": re.compile("phone")}) )
+        inputs.append( soup.find_all("input", attrs={"name": re.compile("code")}) )
+        inputs_2 = list( filter(None, inputs) )
+        print("\n", inputs_2)
+        return render_template("component_dom.html", check_2 = str("Check 2: " + "?") ) # 
     elif q:
         return q
     else:

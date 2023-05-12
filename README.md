@@ -40,5 +40,5 @@ INSTALL flask
 $ pip install Flask
 
 
-RUN:  
+RUN:  flask --app app run --debug 
 $ flask --app [name of file .app without extention] run [--debug is optional]

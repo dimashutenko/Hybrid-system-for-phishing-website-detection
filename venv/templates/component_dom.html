@@ -36,9 +36,9 @@
         <div class="container">
           <h2>Component 2: DOM </h2>
           <input autocomplete="off" autofocus placeholder="link" type="search">
-          <h5 class="check" id="check_1">Check 1: </h5>
+          <h5 class="check" id="check_1">URL Check: </h5>
           <p style="display:none"> </p>
-          <h5 class="check" id="check_2">Check 2: </h5>
+          <h5 class="check" id="check_2">{{ check_2 }}</h5>
 
           <script>
 
@@ -78,8 +78,9 @@
               console.log(e)
             }
 
-            <!--              check 2-->
 
+
+            // check 2
 
 
             try {
@@ -87,11 +88,10 @@
               let input = document.querySelector('input');
 
               input.addEventListener('input', async function() {
-                // console.log(getSourceAsDOM(input.value));
+                // console.log(getSourceAsDOM(input.value));    // violates CORS policy
 
-debugger;
-                $.get(''+input.value+'', function(html) {
-                  console.log(html);
+                // $.get(''+input.value+'', function(html) {    // violates CORS policy
+                //   console.log(html);
                 });
 
 
@@ -117,7 +117,6 @@ debugger;
 
 */
 
-              });
 
             } catch (e) {
                 console.log(e)
