@@ -20,7 +20,6 @@ def component_url():
 @app.route("/component2", methods=["GET", "POST"])
 def component_dom():
     url = request.args.get('url')
-    q = request.args.get("q")
     if url:
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
@@ -71,8 +70,6 @@ def component_dom():
         # else:
         #     return render_template("component_dom.html", check_2 = str("No <input>s detected, validation stopped") )
 
-    elif q:
-        return q
     else:
         return render_template("component_dom.html")
 
