@@ -52,10 +52,25 @@ def footer_a_tags_suspicious(footer):
 def title_and_copyright_check_impersonation(url, soup): # checks title, copyright and url correlation
     title = soup.title.string
     print("\n title: ", title)
-    title = str(title).split(" ")
+    title = str(title.lower()).split(" ")
     for word in title:
         if word in url:
             return False
+    
+    copyright = soup.find_all("copyright")
+    if copyright:
+        print("\n copyright: ", copyright)
+        copyright = str(copyright.lower()).split(" ")
+        for word in copyright:
+            if word in url:
+                return False
+    else:
+        copyright = soup.find_all("©")
+        print("\n copyright: ", copyright)
+        copyright = str(copyright.lower()).split(" ")
+        for word in copyright:
+            if word in url:
+                return False
     return True
     
     
@@ -109,12 +124,15 @@ def component_dom():
 
                         if title_and_copyright_check_impersonation(url, soup):
                             print("Phishing Suspected (impersonation)")
+                        else:
+                            print("No impersonation detected")
 
                         return render_template("component_dom.html", 
                             check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
                             check_2 = str("Check 2: <input> tags detected, validation goes on"), 
                             check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
-                            check_4 = str("Check 4: Suspicious <a> tags not detected in footer, validation goes on") )
+                            check_4 = str("Check 4: Suspicious <a> tags not detected in footer, validation goes on"),
+                            check_5 = str("Check 5: No impersonation in <title> and copyright detected, validation goes on") )
                 else:
                     print("no footer detected")
             else:
