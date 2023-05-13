@@ -34,19 +34,70 @@ def component_dom():
         
         # print("\n", inputs_2)
 
+        
+
         try:
             if inputs_2[0]: # if list not empty
-                print("Check 2: <input>s detected, validation goes on")
+
+                print("\n Check 2: <input>s detected, validation goes on")
 
                 a_tag_s = soup.find_all("a") 
-                #print(a_tag_s)
+
+                # print(a_tag_s)
+
                 if a_tag_s:
+                    # footer_tag = soup.find_all('footer')
+                    # footer_tag.append( soup.find_all('div', class_= re.compile('footer')) )
+                    # footer_tag.append( soup.find_all('div', id= re.compile('footer')) )
+                    # footer_tag_s = list( filter(None, footer_tag) ) # remove all empty []
+
+                    # # print('\n footer_tag_s: ', footer_tag_s)
+
+                    # footer_tag_s_unique = []
+
+                    # for footer_tag in footer_tag_s:
+                    #     if footer_tag not in footer_tag_s_unique:
+                    #         footer_tag_s_unique.append(footer_tag)
                     
-                    footer_tag = soup.find_all('footer')
-                    footer_tag.append( soup.find_all('div', class_= re.compile('footer')) )
-                    footer_tag.append( soup.find_all('div', id= re.compile('footer')) )
-                    footer_tag_s = list( filter(None, footer_tag) ) # remove all empty []
-                    print(footer_tag_s)
+                    # print('\n footer_tag_s_unique: ', footer_tag_s_unique)
+
+
+                    footer_tag = soup.find('div', class_= re.compile('footer'))
+                    #print("\n footer_tag: ", footer_tag)
+
+                    # footer_tags_1 = soup.find(lambda tag: tag.name in ['footer', 'div'] or tag.get('id') == 'footer' or tag.get('class') == 'footer')
+                    footer_tags_1 = soup.select('footer, div#footer, .footer')
+                    #print("\n footer_tags_1: ", footer_tags_1) 
+                    print("\n footer_tags_1[0]: ", footer_tags_1[0])
+
+                    if footer_tags_1:
+                        for footer_tag in footer_tags_1:
+                            a_tags = footer_tag.find('a', attrs={'href': '', 'href': '#'}) # , 'href': re.compile('^#')
+                            if a_tags:
+                                for a_tag in a_tags:
+                                    print("tag", a_tag, " is suspicious")
+                            else:
+                                print("no suspicious <a> tags found")
+                    else:
+                        print("no footer detected")
+
+
+                    # if footer_tag:
+                    #     a_tags = footer_tag.find_all('a', attrs={'href': '', 'href': '#'})
+                    #     if a_tags:
+                    #         for a_tag in a_tags:
+                    #             print("tag", a_tag, " is suspicious")
+                    #     else:
+                    #         print("no suspicious <a> tags found")
+                    # else:
+                    #     print("no footer detected")
+
+
+                    # for footer_tag in footer_tag_s_unique:
+                    #     if "href=''" in string(footer_tag):
+                    #         print("phishing suspected for", footer_tag)
+                    #     elif re.compile('href="#').search( string(footer_tag) ):
+                    #         print("phishing suspected for", footer_tag)
 
                     # 3. перевірка адрес посилань в <footer> (атрибут “href” тегу <a> пустий або “#[будь що]” - підозра фішингу)
                     # 4.  інформація про авторські права та контент тегу <title> (перевірка значень в білих списках)
@@ -62,7 +113,7 @@ def component_dom():
             else:
                 return render_template("component_dom.html", check_2 = str("No <input> tags detected, validation stopped") )
         except:
-            print("An exception occurred")
+            print("\n An exception occurred")
             return render_template("component_dom.html", check_2 = str("Error, check logs") )
 
         # if inputs_2[0]:
