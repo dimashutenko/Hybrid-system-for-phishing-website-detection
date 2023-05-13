@@ -77,17 +77,24 @@ def title_and_copyright_check_impersonation(url, soup): # checks title, copyrigh
     
 def check_identity(url, soup):
     extracted = tldextract.extract(url)
-    domain = extracted.domain # extracted.suffix
-    print("\n domain: ", domain)  
+    domain = str(extracted.domain) + "." + str(extracted.suffix)
+    print("\n domain: " + domain + "\n")  
     a_tags = component_2_check_a_tags_in_body(soup)
     a_tags_refferencing_outside = 0
     for a_tag in a_tags:
-        if domain not in a_tag:
+        if str(domain) not in str(a_tag) and a_tag.get("href")[0] != '/' and a_tag.get("href")[0] != '#':
             a_tags_refferencing_outside+=1
-            print(str(domain) + "is not in " + str(a_tag))
+            print(str(domain) + " is not in " + str(a_tag))
         else:
-            print(str(domain) + "is in " + str(a_tag))
-    print("Number of <a> tags refferencing outside:", a_tags_refferencing_outside)
+            print(str(domain) + " is in " + str(a_tag))
+    print("\n Number of <a> tags refferencing outside:", a_tags_refferencing_outside)
+    if a_tags_refferencing_outside > len(a_tags)/2:
+        print("more than half of <a> tags point to other domains, PHISHING SUSPECTED")
+        return False
+    else:
+        print(str(a_tags_refferencing_outside) + " out of" + str(len(a_tags)) +" <a> tags point to other domains")
+        return True
+
 
 
 
@@ -147,10 +154,24 @@ def component_dom():
                             check_5 = str("Check 5: Website impersonation in <title> and copyright detected, validation stopped, PHISHING SUSPECTED") )
                         else:
                             print("No impersonation detected")
-
-                            # 5->6
-                            check_identity(url, soup)
-
+                            
+                            if check_identity(url, soup):
+                                return render_template("component_dom.html", 
+                            check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
+                            check_2 = str("Check 2: <input> tags detected, validation goes on"), 
+                            check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
+                            check_4 = str("Check 4: Suspicious <a> tags not detected in footer, validation goes on"),
+                            check_5 = str("Check 5: No impersonation in <title> and copyright detected, validation goes on"),
+                            check_6 = str("Check 6: Website identity seems Okay") )
+                            else:
+                                return render_template("component_dom.html", 
+                            check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
+                            check_2 = str("Check 2: <input> tags detected, validation goes on"), 
+                            check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
+                            check_4 = str("Check 4: Suspicious <a> tags not detected in footer, validation goes on"),
+                            check_5 = str("Check 5: No impersonation in <title> and copyright detected, validation goes on"),
+                            check_6 = str("Check 6: Website identity check failed, more than half <a> tags point to other domains, PHISHING SUSPECTED") )
+                
                         return render_template("component_dom.html", 
                             check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
                             check_2 = str("Check 2: <input> tags detected, validation goes on"), 
