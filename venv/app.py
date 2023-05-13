@@ -76,9 +76,19 @@ def title_and_copyright_check_impersonation(url, soup): # checks title, copyrigh
     
     
 def check_identity(url, soup):
+    extracted = tldextract.extract(url)
+    domain = extracted.domain # extracted.suffix
+    print("\n domain: ", domain)  
     a_tags = component_2_check_a_tags_in_body(soup)
     a_tags_refferencing_outside = 0
     for a_tag in a_tags:
+        if domain not in a_tag:
+            a_tags_refferencing_outside+=1
+            print(domain + "is not in " + a_tag)
+        else:
+            print(domain + "is in " + a_tag)
+    print("Number of <a> tags refferencing outside:", a_tags_refferencing_outside)
+
 
 
 @app.route('/')
@@ -139,6 +149,7 @@ def component_dom():
                             print("No impersonation detected")
 
                             # 5->6
+                            check_identity(url, soup)
 
                         return render_template("component_dom.html", 
                             check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
