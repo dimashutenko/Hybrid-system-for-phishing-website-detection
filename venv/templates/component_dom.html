@@ -35,7 +35,10 @@
         </nav>
         <div class="container">
           <h2>Component 2: DOM </h2>
-          <input autocomplete="off" autofocus placeholder="link" type="search">
+          <form action="/component2" method="post">
+            <input autocomplete="off" autofocus placeholder="link" type="text" name="url" value="https://online.staff.ua/">
+            <button type="submit">Check</button>
+          </form>
           <h5 class="check" id="check_1">URL Check: </h5>
           <p style="display:none"> </p>
           <h5 class="check" id="check_2">{{ check_2 }}</h5>
@@ -43,87 +46,9 @@
 
           <script>
 
-            try {
+            
 
-              let input = document.querySelector('input');
-
-              input.addEventListener('input', async function() {
-
-                var myHeaders = new Headers();
-                myHeaders.append("Content-Type", "application/json");
-
-                var raw = "{ 'client': {'clientId':'Dmytro_Shutenko','clientVersion':'1.0.1'}, 'threatInfo': {'threatTypes':['MALWARE', 'SOCIAL_ENGINEERING', 'UNWANTED_SOFTWARE'], 'platformTypes':['ANY_PLATFORM'],'threatEntryTypes': ['URL'], 'threatEntries': [ {'url': '" + input.value + "'} ] } }";
-
-
-                var requestOptions = {
-                  method: 'POST',
-                  headers: myHeaders,
-                  body: raw,
-                  redirect: 'follow'
-                };
-
-
-                document.querySelector('p').innerHTML = await fetch("https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyD5_odg6Etmv_f5coTMEHJpm6GeUDIXFcs", requestOptions)
-                  .then(response => response.text());
-
-                if(document.querySelector('p').innerHTML.includes('matches')){
-                  document.querySelector('h5#check_1').innerHTML = "Check 1: Google API Blacklisted";
-                }
-                else {
-                  document.querySelector('h5#check_1').innerHTML = "Check 1: OK";
-                }
-
-              });
-
-            } catch (e){
-              console.log(e)
-            }
-
-
-
-            // check 2
-
-
-            try {
-
-              let input = document.querySelector('input');
-
-              input.addEventListener('input', async function() {
-                // console.log(getSourceAsDOM(input.value));    // violates CORS policy
-
-                // $.get(''+input.value+'', function(html) {    // violates CORS policy
-                //   console.log(html);
-                });
-
-
-/*
-                fetch(""+input.value+"")
-                  .then(function(response) {
-                      console.log(response.json());
-                      //return response.json();
-                  })
-                  .then(function(data) {
-                      //data is the parsed JSON object/array
-                      console.log(data)
-                  })
-                  .catch(function(err) {
-                      //write the full error object to the console
-                      console.error(err);
-
-                      //show the error message to the user
-                      //you could instead set the `.textContent` of some
-                      //DOM element you use to show errors
-                      alert(err.message);
-                  });
-
-*/
-
-
-            } catch (e) {
-                console.log(e)
-            }
-
-           </script>
+          </script>
 
 
 

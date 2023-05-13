@@ -6,6 +6,30 @@ import re
 
 app = Flask(__name__)
 
+def component_2_check_blacklisted(input_url):
+    print("\n input_url: ", input_url)
+    url = "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyD5_odg6Etmv_f5coTMEHJpm6GeUDIXFcs"
+    payload = "{ 'client': {'clientId':'Dmytro_Shutenko','clientVersion':'1.0.1'}, 'threatInfo': {'threatTypes':['MALWARE', 'SOCIAL_ENGINEERING', 'UNWANTED_SOFTWARE'], 'platformTypes':['ANY_PLATFORM'],'threatEntryTypes': ['URL'], 'threatEntries': [ {'url': '" + input_url + "'} ] } }"
+    headers = {'Content-Type': 'application/json'}
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    print("\n response: ", response.text)
+
+    if "matches" in response.text:
+        return True
+    else:
+        return False
+
+
+def component_2_check_2(soup):
+    inputs = soup.find_all("input", attrs={"name": re.compile("name")})  # finds all the input tags that have attribute "name" names contain value "name"
+    inputs.append( soup.find_all("input", attrs={"name": re.compile("mail")}) )
+    inputs.append( soup.find_all("input", attrs={"name": re.compile("login")}) )
+    inputs.append( soup.find_all("input", attrs={"name": re.compile("id")}) )
+    inputs.append( soup.find_all("input", attrs={"name": re.compile("phone")}) )
+    inputs.append( soup.find_all("input", attrs={"name": re.compile("code")}) )
+    return list( filter(None, inputs) ) # remove all empty []
+
 
 @app.route('/')
 def main():
@@ -19,22 +43,21 @@ def component_url():
 
 @app.route("/component2", methods=["GET", "POST"])
 def component_dom():
-    url = request.args.get('url')
-    if url:
+    if request.method == "POST":
+        url = request.form.get("url")
+
+        if component_2_check_blacklisted(url): # if match found
+            print("Blacklisted link: ", url)
+
         response = requests.get(url)
+
         soup = BeautifulSoup(response.content, 'html.parser')
         # app.logger.debug(soup.prettify())
-        inputs = soup.find_all("input", attrs={"name": re.compile("name")})  # finds all the input tags that have attribute "name" names contain value "name"
-        inputs.append( soup.find_all("input", attrs={"name": re.compile("mail")}) )
-        inputs.append( soup.find_all("input", attrs={"name": re.compile("login")}) )
-        inputs.append( soup.find_all("input", attrs={"name": re.compile("id")}) )
-        inputs.append( soup.find_all("input", attrs={"name": re.compile("phone")}) )
-        inputs.append( soup.find_all("input", attrs={"name": re.compile("code")}) )
-        inputs_2 = list( filter(None, inputs) ) # remove all empty []
         
-        # print("\n", inputs_2)
-
+        # here should go component with input presence checks
+        inputs = component_2_check_2(soup)
         
+        print("\n inputs:", inputs)
 
         try:
             if inputs_2[0]: # if list not empty
@@ -135,3 +158,6 @@ def component_dom():
 
 if __name__ == '__main__':
     app.run()
+
+
+
