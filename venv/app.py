@@ -93,6 +93,7 @@ def component_dom():
                     else:
                         print("no suspicious <a> tags found")
                         # check 4->5
+                        title_and_copyright_check(soup)
 
                         return render_template("component_dom.html", 
                             check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
