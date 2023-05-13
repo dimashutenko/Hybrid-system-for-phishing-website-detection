@@ -113,17 +113,17 @@ def component_url():
 @app.route("/component2", methods=["GET", "POST"])
 def component_dom():
     if request.method == "POST":
-
-        try:
-            url = request.form.get("url")
-            print("\n url: ", url)
-        except:
-            return render_template("component_dom.html", check_1 = str("unvalid url, try again") )
-
+        url = request.form.get("url")
+        if not validators.url(str(url)):
+            return render_template("component_dom.html",
+                input_url = str("URL: " + url), 
+                check_1 = str("invalid url, try again") )
         
         if component_2_check_blacklisted(url): # if match found
             print("Blacklisted url: ", url)
-            return render_template("component_dom.html", check_1 = str("Check 1: given url is blacklisted by Google, validation stopped, PHISHING DETECTED") )
+            return render_template("component_dom.html",
+                input_url = str(url),
+                check_1 = str("Check 1: given url is blacklisted by Google, validation stopped, PHISHING DETECTED") )
 
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
