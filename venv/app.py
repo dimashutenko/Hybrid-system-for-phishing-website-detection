@@ -3,6 +3,7 @@ from flask import Flask, render_template, request
 from bs4 import BeautifulSoup
 import requests
 import re
+import tldextract
 
 app = Flask(__name__)
 
@@ -74,6 +75,10 @@ def title_and_copyright_check_impersonation(url, soup): # checks title, copyrigh
     return True
     
     
+def check_identity(url, soup):
+    a_tags = component_2_check_a_tags_in_body(soup)
+    a_tags_refferencing_outside = 0
+    for a_tag in a_tags:
 
 
 @app.route('/')
@@ -124,8 +129,16 @@ def component_dom():
 
                         if title_and_copyright_check_impersonation(url, soup):
                             print("Phishing Suspected (impersonation)")
+                            return render_template("component_dom.html", 
+                            check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
+                            check_2 = str("Check 2: <input> tags detected, validation goes on"), 
+                            check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
+                            check_4 = str("Check 4: Suspicious <a> tags not detected in footer, validation goes on"),
+                            check_5 = str("Check 5: Website impersonation in <title> and copyright detected, validation stopped, PHISHING SUSPECTED") )
                         else:
                             print("No impersonation detected")
+
+                            # 5->6
 
                         return render_template("component_dom.html", 
                             check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
