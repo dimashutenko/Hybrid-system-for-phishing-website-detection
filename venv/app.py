@@ -6,6 +6,8 @@ import re
 
 app = Flask(__name__)
 
+whitelist = ["facebook.com", "google.com", "yahoo.com"]
+
 def component_2_check_blacklisted(input_url):
     print("\n input_url: ", input_url)
     url = "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyD5_odg6Etmv_f5coTMEHJpm6GeUDIXFcs"
@@ -45,6 +47,11 @@ def footer_a_tags_suspicious(footer):
     footer_a_tags_suspicious_list = footer.find('a', attrs={'href': '', 'href': '#'}) # , 'href': re.compile('^#')
     print("\n footer_a_tags_suspicious: ", footer_a_tags_suspicious_list)
     return footer_a_tags_suspicious_list
+
+
+def title_and_copyright_check(soup):
+    title = soup.find_all("title")
+    copyright = soup.find_all()
 
 
 @app.route('/')
@@ -126,15 +133,6 @@ def component_dom():
 
 
         
-
-
-# @app.route("/url_check")
-# def url_check():
-#     link = request.args.get("link")
-#     if not link:
-#         link = ''
-#     return render_template("url_check.html", link=link)
-
 
 if __name__ == '__main__':
     app.run()
