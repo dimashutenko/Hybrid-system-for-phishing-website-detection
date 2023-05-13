@@ -6,7 +6,7 @@ import re
 
 app = Flask(__name__)
 
-whitelist = ["facebook.com", "google.com", "yahoo.com"]
+whitelist = ["facebook", "google", "meta"] # test
 
 def component_2_check_blacklisted(input_url):
     print("\n input_url: ", input_url)
@@ -49,9 +49,16 @@ def footer_a_tags_suspicious(footer):
     return footer_a_tags_suspicious_list
 
 
-def title_and_copyright_check(soup):
-    title = soup.find_all("title")
-    copyright = soup.find_all()
+def title_and_copyright_check_impersonation(url, soup): # checks title, copyright and url correlation
+    title = soup.title.string
+    print("\n title: ", title)
+    title = str(title).split(" ")
+    for word in title:
+        if word in url:
+            return False
+    return True
+    
+    
 
 
 @app.route('/')
@@ -77,7 +84,7 @@ def component_dom():
         soup = BeautifulSoup(response.content, 'html.parser')
         # app.logger.debug(soup.prettify())
         
-        # here should go component with input presence checks
+        # component with input presence checks
         inputs = component_2_check_2(soup)
         
         print("inputs:", inputs)
@@ -98,9 +105,10 @@ def component_dom():
                             check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
                             check_4 = str("Check 4: Suspicious <a> tags are not detected in footer, validation stopped, PHISHING SUSPECTED") )
                     else:
-                        print("no suspicious <a> tags found")
-                        # check 4->5
-                        title_and_copyright_check(soup)
+                        print("\n no suspicious <a> tags found")
+
+                        if title_and_copyright_check_impersonation(url, soup):
+                            print("Phishing Suspected (impersonation)")
 
                         return render_template("component_dom.html", 
                             check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
