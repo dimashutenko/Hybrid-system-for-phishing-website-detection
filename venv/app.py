@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import tldextract
+import validators
+
 
 app = Flask(__name__)
 
@@ -84,15 +86,15 @@ def check_identity(url, soup):
     for a_tag in a_tags:
         if str(domain) not in str(a_tag) and a_tag.get("href")[0] != '/' and a_tag.get("href")[0] != '#':
             a_tags_refferencing_outside+=1
-            print(str(domain) + " is not in " + str(a_tag))
-        else:
-            print(str(domain) + " is in " + str(a_tag))
-    print("\n Number of <a> tags refferencing outside:", a_tags_refferencing_outside)
+            # (str(domain) + " is not in " + str(a_tag))
+        # else:
+            # print(str(domain) + " is in " + str(a_tag))
+    # print("\n Number of <a> tags refferencing outside:", a_tags_refferencing_outside)
     if a_tags_refferencing_outside > len(a_tags)/2:
         print("more than half of <a> tags point to other domains, PHISHING SUSPECTED")
         return False
     else:
-        print(str(a_tags_refferencing_outside) + " out of" + str(len(a_tags)) +" <a> tags point to other domains")
+        print(str(a_tags_refferencing_outside) + " out of " + str(len(a_tags)) + " <a> tags point to other domains \n")
         return True
 
 
@@ -111,7 +113,13 @@ def component_url():
 @app.route("/component2", methods=["GET", "POST"])
 def component_dom():
     if request.method == "POST":
-        url = request.form.get("url")
+
+        try:
+            url = request.form.get("url")
+            print("\n url: ", url)
+        except:
+            return render_template("component_dom.html", check_1 = str("unvalid url, try again") )
+
         
         if component_2_check_blacklisted(url): # if match found
             print("Blacklisted url: ", url)
@@ -193,14 +201,6 @@ def component_dom():
                 check_2 = str("Check 2: no <input> tags detected, validation stopped") )
     else:
         return render_template("component_dom.html") # default, no form submition 
-
-
-
-
-
-        
-        #             # 4.  інформація про авторські права та контент тегу <title> (перевірка значень в білих списках)
-        #             # 5.  “самоідентичність” сайту (якщо більша кількість посилань спрямовані на ресурси неафілійовані з доменом - підозра фішингу)
 
 
         
