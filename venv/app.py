@@ -84,9 +84,9 @@ def check_identity(url, soup):
     for a_tag in a_tags:
         if domain not in a_tag:
             a_tags_refferencing_outside+=1
-            print(domain + "is not in " + a_tag)
+            print(str(domain) + "is not in " + str(a_tag))
         else:
-            print(domain + "is in " + a_tag)
+            print(str(domain) + "is in " + str(a_tag))
     print("Number of <a> tags refferencing outside:", a_tags_refferencing_outside)
 
 
