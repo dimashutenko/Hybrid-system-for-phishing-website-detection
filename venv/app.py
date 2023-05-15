@@ -129,8 +129,7 @@ def component_dom():
         soup = BeautifulSoup(response.content, 'html.parser')
         # app.logger.debug(soup.prettify())
         
-        # component with input presence checks
-        inputs = component_2_check_2(soup)
+        inputs = component_2_check_2(soup) # component with input presence checks
         
         print("inputs:", inputs)
 
