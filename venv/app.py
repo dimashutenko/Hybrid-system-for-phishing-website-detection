@@ -5,7 +5,7 @@ import requests
 import re
 import tldextract
 import validators
-from 
+from shutenko_functions import heuristic_checks
 
 
 app = Flask(__name__)
@@ -203,9 +203,27 @@ def component_dom():
         return render_template("component_dom.html") # default, no form submition 
 
 
-@app.route("/component3")
+@app.route("/component3", methods=["GET", "POST"])
 def component_heuristics():
-    return render_template("component_heuristics.html")
+    if request.method == "POST":
+        url = request.form.get("url")
+        if not validators.url(str(url)):
+            return render_template("component_heuristics.html",
+                input_url = str("URL: " + url), 
+                check_1 = str("invalid url, try again") )
+        
+        if component_2_check_blacklisted(url): # if match found
+            print("Blacklisted url: ", url)
+            return render_template("component_dom.html",
+                input_url = str(url),
+                check_1 = str("Check 1: given url is blacklisted by Google, validation stopped, PHISHING DETECTED") )
+
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        heuristic_checks(url, soup) # too much code -> import from outer file
+    else:
+        return render_template("component_heuristics.html") # default, no form submition 
         
 
 if __name__ == '__main__':
