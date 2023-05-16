@@ -202,6 +202,9 @@ def component_dom():
         return render_template("component_dom.html") # default, no form submition 
 
 
+@app.route("/component3")
+def component_heuristics():
+    return render_template("component_heuristics.html")
         
 
 if __name__ == '__main__':
