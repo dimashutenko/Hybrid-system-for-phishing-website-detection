@@ -1,2 +1,4 @@
+# consider adding other functions from app.py here
+
 def heuristic_checks():
-    alert(0)
+    pass 
