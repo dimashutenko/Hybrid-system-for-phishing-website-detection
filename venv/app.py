@@ -28,7 +28,9 @@ def component_2_check_blacklisted(input_url):
 
 
 def component_2_check_2(soup):
+    print(soup)
     inputs = soup.findAll("input", {"name" : re.compile("name", re.IGNORECASE)})  # finds all the input tags that have attribute "name" and contain value "name"
+    inputs.append( soup.find_all("input", attrs={"name": "username"}) )
     inputs.append( soup.find_all("input", attrs={"name": re.compile("mail")}) )
     inputs.append( soup.find_all("input", attrs={"name": re.compile("login")}) )
     inputs.append( soup.find_all("input", attrs={"name": re.compile("id")}) )
@@ -124,7 +126,7 @@ def component_dom():
             print("Blacklisted url: ", url)
             return render_template("component_dom.html",
                 input_url = str(url),
-                check_1 = str("Check 1: given url is blacklisted by Google, validation stopped, PHISHING DETECTED") )
+                check_1 = str("PHISHING DETECTED") ) # Check 1: given url is blacklisted by Google, validation stopped, 
 
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
@@ -138,56 +140,63 @@ def component_dom():
             print("\n Check 2: <input>s detected, validation goes on")
 
             if component_2_check_a_tags_in_body(soup):
-                footer_tag = soup.select('footer, div#footer, .footer')[0]
-                if footer_tag:
-                    print("\n footer_tag: ", footer_tag)
-                    if footer_a_tags_suspicious(footer_tag):
-                        # for footer_a_tag_suspicious in footer_a_tags_suspicious:
-                        #     print("tag", footer_a_tag_suspicious, " is suspicious")
-                        return render_template("component_dom.html", 
-                            check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
-                            check_2 = str("Check 2: <input> tags detected, validation goes on"), 
-                            check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
-                            check_4 = str("Check 4: Suspicious <a> tags are not detected in footer, validation stopped, PHISHING SUSPECTED") )
-                    else:
-                        print("\n no suspicious <a> tags found")
-
-                        if title_and_copyright_check_impersonation(url, soup):
-                            print("Phishing Suspected (impersonation)")
-                            return render_template("component_dom.html", 
-                            check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
-                            check_2 = str("Check 2: <input> tags detected, validation goes on"), 
-                            check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
-                            check_4 = str("Check 4: Suspicious <a> tags not detected in footer, validation goes on"),
-                            check_5 = str("Check 5: Website impersonation in <title> and copyright detected, validation stopped, PHISHING SUSPECTED") )
-                        else:
-                            print("No impersonation detected")
-                            
-                            if check_identity(url, soup):
-                                return render_template("component_dom.html", 
-                            check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
-                            check_2 = str("Check 2: <input> tags detected, validation goes on"), 
-                            check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
-                            check_4 = str("Check 4: Suspicious <a> tags not detected in footer, validation goes on"),
-                            check_5 = str("Check 5: No impersonation in <title> and copyright detected, validation goes on"),
-                            check_6 = str("Check 6: Website identity seems Okay") )
-                            else:
-                                return render_template("component_dom.html", 
-                            check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
-                            check_2 = str("Check 2: <input> tags detected, validation goes on"), 
-                            check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
-                            check_4 = str("Check 4: Suspicious <a> tags not detected in footer, validation goes on"),
-                            check_5 = str("Check 5: No impersonation in <title> and copyright detected, validation goes on"),
-                            check_6 = str("Check 6: Website identity check failed, more than half <a> tags point to other domains, PHISHING SUSPECTED") )
                 
-                        return render_template("component_dom.html", 
-                            check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
-                            check_2 = str("Check 2: <input> tags detected, validation goes on"), 
-                            check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
-                            check_4 = str("Check 4: Suspicious <a> tags not detected in footer, validation goes on"),
-                            check_5 = str("Check 5: No impersonation in <title> and copyright detected, validation goes on") )
-                else:
-                    print("no footer detected")
+                try:
+                    footer_tag = soup.select('footer, div#footer, .footer')[0]
+                    if footer_tag:
+                        print("\n footer_tag: ", footer_tag)
+                        if footer_a_tags_suspicious(footer_tag):
+                            # for footer_a_tag_suspicious in footer_a_tags_suspicious:
+                            #     print("tag", footer_a_tag_suspicious, " is suspicious")
+                            return render_template("component_dom.html", 
+                                check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
+                                check_2 = str("Check 2: <input> tags detected, validation goes on"), 
+                                check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
+                                check_4 = str("Check 4: Suspicious <a> tags are not detected in footer, validation stopped, PHISHING SUSPECTED") )
+                        else:
+                            print("\n no suspicious <a> tags found")
+
+                            if title_and_copyright_check_impersonation(url, soup):
+                                print("Phishing Suspected (impersonation)")
+                                return render_template("component_dom.html", 
+                                check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
+                                check_2 = str("Check 2: <input> tags detected, validation goes on"), 
+                                check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
+                                check_4 = str("Check 4: Suspicious <a> tags not detected in footer, validation goes on"),
+                                check_5 = str("Check 5: Website impersonation in <title> and copyright detected, validation stopped, PHISHING SUSPECTED") )
+                            else:
+                                print("No impersonation detected")
+                                
+                                if check_identity(url, soup):
+                                    return render_template("component_dom.html", 
+                                check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
+                                check_2 = str("Check 2: <input> tags detected, validation goes on"), 
+                                check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
+                                check_4 = str("Check 4: Suspicious <a> tags not detected in footer, validation goes on"),
+                                check_5 = str("Check 5: No impersonation in <title> and copyright detected, validation goes on"),
+                                check_6 = str("Check 6: Website identity seems Okay") )
+                                else:
+                                    return render_template("component_dom.html", 
+                                check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
+                                check_2 = str("Check 2: <input> tags detected, validation goes on"), 
+                                check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
+                                check_4 = str("Check 4: Suspicious <a> tags not detected in footer, validation goes on"),
+                                check_5 = str("Check 5: No impersonation in <title> and copyright detected, validation goes on"),
+                                check_6 = str("Check 6: Website identity check failed, more than half <a> tags point to other domains, PHISHING SUSPECTED") )
+                    
+                            return render_template("component_dom.html", 
+                                check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"), 
+                                check_2 = str("Check 2: <input> tags detected, validation goes on"), 
+                                check_3 = str("Check 3: <a> tags are detected in <body>, validation goes on"), 
+                                check_4 = str("Check 4: Suspicious <a> tags not detected in footer, validation goes on"),
+                                check_5 = str("Check 5: No impersonation in <title> and copyright detected, validation goes on") )
+                    else:
+                        print("no footer detected")
+                except:
+                    ("Error occured")
+                    return render_template("component_dom.html",
+                        check_1 = str("Check 1: given url is not blacklisted by Google, validation goes on"),
+                        check_2 = str("Check 2: error, validation stopped"))
             else:
                 print("no <a> tags detected in <body>")
                 return render_template("component_dom.html", 
