@@ -1,5 +1,6 @@
 .container{
     height: 200vh;
+    padding: 1rem;
 }
 .check{
     margin-top: 1vh;
