@@ -35,8 +35,7 @@
         </nav>
         <div class="container">
           <h2>Component 3: Heuristics </h2>
-          <h3> is being reviewed </h3>
-          <form action="/component3" method="post" class="d-none">
+          <form action="/component3" method="post" class="">
             <h5 class="input_instruction">Enter URL to check</h5>
             <h6>Format http(s)://...</h6>
             <div class="form-group mt-3 mb-3">
@@ -45,7 +44,7 @@
             </div>
             <button type="submit" class="btn btn-outline-primary">Check</button>
           </form>
-          <!-- <h5 class="input_url mt-3">{{ input_url }}</h5> -->
+          <h5 class="input_url mt-3">{{ input_url }}</h5>
           <h5 class="check" id="message">{{ message }}</h5>
           
           {% if checks %}

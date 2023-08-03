@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 # Path of the file to read
-dataset_path = '../dataset_phishing.csv'
+dataset_path = '../dataset_phishing.csv'  # https://www.kaggle.com/datasets/ruckdent/phishing-dataset
 
 phishing_data = pd.read_csv(dataset_path)
 

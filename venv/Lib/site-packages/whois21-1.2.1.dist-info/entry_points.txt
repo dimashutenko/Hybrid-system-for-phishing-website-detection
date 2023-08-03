@@ -1,0 +1,2 @@
+[console_scripts]
+whois21 = whois21.__main__:run
