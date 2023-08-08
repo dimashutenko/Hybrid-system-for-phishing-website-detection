@@ -39,7 +39,7 @@
             <h5 class="input_instruction">Enter URL to check</h5>
             <h6>Format http(s)://...</h6>
             <div class="form-group mt-3 mb-3">
-              <input style="width:25%" autocomplete="off" placeholder="url" type="text" name="url" value="https://waterloo.ca"> 
+              <input style="width:25%" autocomplete="off" placeholder="url" type="text" name="url" value="https://facebook.com"> 
               <!-- value="https://online.staff.ua" -->
             </div>
             <button type="submit" class="btn btn-outline-primary">Check</button>
@@ -57,9 +57,9 @@
               </thead>
               <tbody>
                 {% for key, value in checks.items() %}
-                  <tr>
+                  <tr data-toggle="tooltip" data-placement="right" title= "{{ value[1] }}">
                     <td>{{ key }}</td>
-                    <td>{{ value }}</td>
+                    <td>{{ value[0] }}</td>
                   </tr>
                 {% endfor %}
               </tbody>
