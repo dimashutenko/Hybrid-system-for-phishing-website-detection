@@ -264,6 +264,7 @@ def component_heuristics():
                     checks['whois registered domain'] = ['passed', 'domain resolved with whois, response: \n {}'.format(str(whois_registered(domain))[:300]+'...')]
                     checks['domain registration length'] = ['passed', 'domain registered for {} days'.format(domain_registration_length(domain))]
                 else:
+                    checks['whois registered domain'] = ['suspicious', 'whois response: \n {}'.format(str(whois_registered(domain))[:300]+'...')]
                     checks['domain registration length'] = ['suspicious', 'domain registered for {} days'.format(domain_registration_length(domain))]
             except:
                 checks['whois registered domain'] = ['suspicious', 'domain not resolved with whois']

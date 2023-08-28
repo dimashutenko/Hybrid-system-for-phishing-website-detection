@@ -396,16 +396,25 @@ def global_rank(domain):
 
 
 
-
-
-# has to be weighted when all checks come into play
 def verdict(checks):
-    arr, passes = [value for value in checks.values()], 0
-    for value in arr:
-        if value == 'passed':
-            passes +=1
-    if passes > len(arr)/2:
-        return 'website seems valid'
-    return 'mild phishing probability' if passes < len(arr)/2 else 'little phishing probability'
+    if 'passed' not in checks.get('Google Safe Brousing API'):
+        return 'Phishing'
+    if 'passed' not in checks.get('whois registered domain'):
+        return 'Phishing'
+    
+    del checks('Google Safe Brousing API')
+    del checks('whois registered domain')
+    del checks('domain registration length')
+    del checks('google_index')
 
+    failed_checks = 0
+    total_checks = 0
+
+    for content_check in checks:
+        if 'suspicious' in content_check:
+            failed_checks+=1
+        elif 'failed' in  
+
+    
+    return 'Legitimate'
 
