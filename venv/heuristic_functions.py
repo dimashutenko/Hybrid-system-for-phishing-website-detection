@@ -402,18 +402,18 @@ def verdict(checks):
     if 'passed' not in checks.get('whois registered domain'):
         return 'Phishing'
     
-    del checks('Google Safe Brousing API')
-    del checks('whois registered domain')
-    del checks('domain registration length')
-    del checks('google_index')
+    # del checks('Google Safe Brousing API')
+    # del checks('whois registered domain')
+    # del checks('domain registration length')
+    # del checks('google_index')
 
     failed_checks = 0
     total_checks = 0
 
-    for content_check in checks:
-        if 'suspicious' in content_check:
-            failed_checks+=1
-        elif 'failed' in  
+    # for content_check in checks:
+    #     if 'suspicious' in content_check:
+    #         failed_checks+=1
+    #     elif 'failed' in  
 
     
     return 'Legitimate'

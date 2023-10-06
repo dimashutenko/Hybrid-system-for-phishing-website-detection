@@ -126,49 +126,102 @@ def component_heuristics():
             except:
                 checks['number of hyperlinks'] = ['failed']
 
+            try:
+                if not hyperlinks['internal']:
+                    # checks['number of internal hyperlinks'] = ['suspicious', 'number of internal hyperlinks is {}'.format(0)]
+                    checks['ratio of internal hyperlinks'] = ['suspicious', "internal hyperlinks ratio is {}".format(0)]
+                else:
+                    if get_internal_hyperlinks_ratio(soup, domain) > 0.5:
+                        # checks['number of internal hyperlinks'] = ['passed', 'number of internal hyperlinks is {}'.format(hyperlinks['internal'])] 
+                        checks['ratio of internal hyperlinks'] = ['passed', "internal hyperlinks ratio is {}".format(get_internal_hyperlinks_ratio(soup, domain))]
+                    else:
+                        # checks['number of internal hyperlinks'] = ['suspicious', 'number of internal hyperlinks is {}'.format(hyperlinks['internal'])] 
+                        checks['ratio of internal hyperlinks'] = ['suspicious', "internal hyperlinks ratio is {}".format(get_internal_hyperlinks_ratio(soup, domain))]
+            except:
+                # checks['number of internal hyperlinks'] = ['failed']
+                checks['ratio of internal hyperlinks'] = ['failed']
+            
+                
+            try:
+                if not hyperlinks['external']:
+                    # checks['number of external hyperlinks'] = ['passed', 'number of external hyperlinks is {}'.format(0)]
+                    checks['ratio of external hyperlinks'] = ['passed', "external hyperlinks ratio is {}".format(0)]
+                else:
+                    if get_external_hyperlinks_ratio(soup, domain) > 0.3:
+                        # checks['number of external hyperlinks'] = ['suspicious', 'number of external hyperlinks is {}'.format(hyperlinks['external'])] 
+                        checks['ratio of external hyperlinks'] = ['suspicious', "external hyperlinks ratio is {}".format(get_external_hyperlinks_ratio(soup, domain))]
+                    else:
+                        checks['ratio of external hyperlinks'] = ['passed', "external hyperlinks ratio is {}".format(get_external_hyperlinks_ratio(soup, domain))]
+            except:
+                # checks['number of external hyperlinks'] = ['failed']
+                checks['ratio of external hyperlinks'] = ['failed']
 
             try:
                 if not hyperlinks['null']:
-                    checks['number of null hyperlinks'] = ['passed', 'number of null hyperlinks is {}'.format(0)]
+                    # checks['number of null hyperlinks'] = ['passed', 'number of null hyperlinks is {}'.format(0)]
                     checks['ratio of null hyperlinks'] = ['passed', "null hyperlinks ratio is {}".format(0)]
                 else:
-                    checks['number of null hyperlinks'] = ['suspicious', 'number of null hyperlinks is {}'.format(hyperlinks['null'])] 
+                    # checks['number of null hyperlinks'] = ['suspicious', 'number of null hyperlinks is {}'.format(hyperlinks['null'])] 
                     if get_null_hyperlinks_ratio(soup, domain) < 0.2:
                         checks['ratio of null hyperlinks'] = ['passed', "null hyperlinks ratio is {}".format(get_null_hyperlinks_ratio(soup, domain))]
                     else:
                         checks['ratio of null hyperlinks'] = ['suspicious', "null hyperlinks ratio is {}".format(get_null_hyperlinks_ratio(soup, domain))]
             except:
-                checks['number of null hyperlinks'] = ['failed']
+                # checks['number of null hyperlinks'] = ['failed']
                 checks['ratio of null hyperlinks'] = ['failed']
 
             try:
-                if not hyperlinks['internal']:
-                    checks['number of internal hyperlinks'] = ['suspicious', 'number of internal hyperlinks is {}'.format(0)]
-                    checks['ratio of internal hyperlinks'] = ['suspicious', "internal hyperlinks ratio is {}".format(0)]
-                else:
-                    if get_internal_hyperlinks_ratio(soup, domain) > 0.5:
-                        checks['number of internal hyperlinks'] = ['passed', 'number of internal hyperlinks is {}'.format(hyperlinks['internal'])] 
-                        checks['ratio of internal hyperlinks'] = ['passed', "internal hyperlinks ratio is {}".format(get_internal_hyperlinks_ratio(soup, domain))]
-                    else:
-                        checks['number of internal hyperlinks'] = ['suspicious', 'number of internal hyperlinks is {}'.format(hyperlinks['internal'])] 
-                        checks['ratio of internal hyperlinks'] = ['suspicious', "internal hyperlinks ratio is {}".format(get_internal_hyperlinks_ratio(soup, domain))]
+                domain_in_copyright, copyright_info = domain_with_copyright(domain, soup)
+                checks['domain with copyright'] = ['passed', 'content around copyright: {}'.format(copyright_info)] if domain_in_copyright else ['suspicious', 'content around copyright: {}'.format(copyright_info)]
             except:
-                checks['number of internal hyperlinks'] = ['failed']
-                checks['ratio of internal hyperlinks'] = ['failed']
-                
+                checks['domain with copyright'] = ['failed']
+
             try:
-                if not hyperlinks['external']:
-                    checks['number of external hyperlinks'] = ['passed', 'number of external hyperlinks is {}'.format(0)]
-                    checks['ratio of external hyperlinks'] = ['passed', "external hyperlinks ratio is {}".format(0)]
-                else:
-                    if get_external_hyperlinks_ratio(soup, domain) > 0.3:
-                        checks['number of external hyperlinks'] = ['suspicious', 'number of external hyperlinks is {}'.format(hyperlinks['external'])] 
-                        checks['ratio of external hyperlinks'] = ['suspicious', "external hyperlinks ratio is {}".format(get_external_hyperlinks_ratio(soup, domain))]
-                    else:
-                        checks['ratio of external hyperlinks'] = ['passed', "external hyperlinks ratio is {}".format(get_external_hyperlinks_ratio(soup, domain))]
+                suspicious_forms = login_form(get_forms(soup, hostname, domain))
+                checks['login form'] = ['suspicious', suspicious_forms] if suspicious_forms else ['passed', 'no suspicious form actions detected']
             except:
-                checks['number of external hyperlinks'] = ['failed']
-                checks['ratio of external hyperlinks'] = ['failed']
+                checks['login form'] = ['failed']
+
+            try:
+                checks['favicon source'] = ['suspicious', 'favicon is loaded from an external domain'] if favicon_external_source(soup)  else ['passed', 'favicon is loaded from the same domain']
+            except:
+                checks['favicon source'] = ['failed']
+    
+            try:
+                if submitting_to_email(get_forms(soup, domain, hostname)):
+                    checks['submitting to email'] = ['suspicious', "form submits info to email"]
+                else:
+                    checks['submitting to email'] = ['passed', "form doesn't submit info to email"]
+            except:
+                checks['submitting to email'] = ['failed']
+
+
+            try:
+                checks['iframe'] = ['suspicious', '<iframe> found'] if soup.findAll('iframe') else ['passed', '<iframe> not found']
+            except:
+                checks['iframe'] = ['failed']
+
+            try:
+                checks['right click'] = ['suspicious', 'right click disabled'] if soup.find_all(oncontextmenu=True) else ['passed', 'right click not disabled']
+            except:
+                checks['right click'] = ['failed']
+
+            # try:
+            #     checks['empty title'] = ['passed', "title is '{}'".format(get_title(soup))] if get_title(soup) else ['suspicious', 'title is empty']
+            # except:
+            #     checks['empty title'] = ['failed']
+
+            try:
+                if domain_in_title(tldextract.extract(url).domain, soup):
+                    checks['domain in title'] = ['passed', "domain {} is in the <title>".format(tldextract.extract(url).domain)]
+                else:
+                    checks['domain in title'] = ['suspicious', "domain {} is not in the <title>".format(tldextract.extract(url).domain)]
+            except:
+                checks['domain in title'] = ['failed']
+
+            # to do -> check for pop up window
+
+
 
 
             # if soup.find_all("a") != None:
@@ -186,79 +239,37 @@ def component_heuristics():
             # else:
             #     print("no <a> tags detected")
             #     checks['suspicious <a> tags in footer'] = ['failed']
+
                                 
-            try:
-                if count_redirects(url) < 3:
-                    checks['redirects'] = ['passed']
-                else:
-                    checks['redirects'] = ['suspicious']
-                checks['redirects'] = checks['redirects'] + ['request history showed {} redirects'.format(count_redirects(url))] 
-            except:
-                checks['redirects'] = ['failed']
-
-            try:
-                suspicious_forms = login_form(get_forms(soup, hostname, domain))
-                checks['login form'] = ['suspicious', suspicious_forms] if suspicious_forms else ['passed', 'no suspicious form actions detected']
-            except:
-                checks['login form'] = ['failed']
-
-            try:
-                checks['favicon source'] = ['suspicious', 'favicon is loaded from an external domain'] if favicon_external_source(soup)  else ['passed', 'favicon is loaded from the same domain']
-            except:
-                checks['favicon source'] = ['failed']
-    
-            try:
-                checks['empty title'] = ['passed', "title is '{}'".format(get_title(soup))] if get_title(soup) else ['suspicious', 'title is empty']
-            except:
-                checks['empty title'] = ['failed']
-
+            # try:
+            #     if count_redirects(url) < 3:
+            #         checks['redirects'] = ['passed']
+            #     else:
+            #         checks['redirects'] = ['suspicious']
+            #     checks['redirects'] = checks['redirects'] + ['request history showed {} redirects'.format(count_redirects(url))] 
+            # except:
+            #     checks['redirects'] = ['failed']
+     
+            
             # try:
             #     checks['identity'] = ['passed'] if check_identity(url, soup) else ['suspicious']
             # except:
             #     checks['identity'] = ['failed']
             
-            try:
-                domain_in_copyright, copyright_info = domain_with_copyright(domain, soup)
-                checks['domain with copyright'] = ['passed', 'content around copyright: {}'.format(copyright_info)] if domain_in_copyright else ['suspicious', 'content around copyright: {}'.format(copyright_info)]
-            except:
-                checks['domain with copyright'] = ['failed']
+            
+            # try:
+            #     res = fake_brand_in_path(domain, url, brands)
+            #     if res:
+            #         checks['fake brand in path'] = ['suspicious', 'fake brand {} in path detected'.format(res)] 
+            #     else:
+            #         checks['fake brand in path'] = ['passed', 'no fake brand in path detected']
+            # except:
+            #     checks['fake brand in path']  = ['failed'] 
 
-            try:
-                checks['iframe'] = ['suspicious', '<iframe> found'] if soup.findAll('iframe') else ['passed', '<iframe> not found']
-            except:
-                checks['iframe'] = ['failed']
+            
 
-            try:
-                checks['right click'] = ['suspicious', 'right click disabled'] if soup.find_all(oncontextmenu=True) else ['passed', 'right click not disabled']
-            except:
-                checks['right click'] = ['failed']
-
-            try:
-                res = fake_brand_in_path(domain, url, brands)
-                if res:
-                    checks['fake brand in path'] = ['suspicious', 'fake brand {} in path detected'.format(res)] 
-                else:
-                    checks['fake brand in path'] = ['passed', 'no fake brand in path detected']
-            except:
-                checks['fake brand in path']  = ['failed'] 
-
-            try:
-                if domain_in_title(tldextract.extract(url).domain, soup):
-                    checks['domain in title'] = ['passed', "domain {} is in the <title>".format(tldextract.extract(url).domain)]
-                else:
-                    checks['domain in title'] = ['suspicious', "domain {} is not in the <title>".format(tldextract.extract(url).domain)]
-            except:
-                checks['domain in title'] = ['failed']
-
-
-            try:
-                if submitting_to_email(get_forms(soup, domain, hostname)):
-                    checks['submitting to email'] = ['suspicious', "form submits info to email"]
-                else:
-                    checks['submitting to email'] = ['passed', "form doesn't submit info to email"]
-            except:
-                checks['submitting to email'] = ['failed']
-
+            # to do -> check google index
+            
             try:
                 if domain_registration_length(domain)>365:
                     checks['whois registered domain'] = ['passed', 'domain resolved with whois, response: \n {}'.format(str(whois_registered(domain))[:300]+'...')]
@@ -276,6 +287,7 @@ def component_heuristics():
                 checks['google_index']  = ['failed']
 
 
+            # to do -> review verdict
 
             result = verdict(checks)
 
