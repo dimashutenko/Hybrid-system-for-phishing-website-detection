@@ -6,8 +6,8 @@ import requests
 import re
 import tldextract
 import validators
+from urllib.parse import urlparse, urljoin
 import urllib.parse
-from urllib.parse import urlparse
 import whois21
 import time
 
@@ -31,14 +31,12 @@ from heuristic_functions import get_number_of_hyperlinks
 from heuristic_functions import get_internal_hyperlinks_ratio
 from heuristic_functions import get_null_hyperlinks_ratio
 from heuristic_functions import get_external_hyperlinks_ratio
-from heuristic_functions import *
-
-
+from heuristic_functions import has_popup_window
 from heuristic_functions import verdict
+from heuristic_functions import *
 
 brands_file = open(os.getcwd()+"\\venv\\static\\data\\brands.txt", "r")
 brands = [ line.rstrip() for line in brands_file ]
-
 
 app = Flask(__name__)
 
@@ -116,7 +114,7 @@ def component_heuristics():
 
             checks['Google Safe Brousing API'] = ['passed','Given website is not blacklisted by Google'] if not is_blacklisted else ['PHISHING']
         
-            hyperlinks = get_number_of_hyperlinks(soup, domain)
+            hyperlinks = get_number_of_hyperlinks(soup, url)
 
             try:
                 if hyperlinks['total']:
@@ -201,10 +199,10 @@ def component_heuristics():
             except:
                 checks['iframe'] = ['failed']
 
-            try:
-                checks['right click'] = ['suspicious', 'right click disabled'] if soup.find_all(oncontextmenu=True) else ['passed', 'right click not disabled']
-            except:
-                checks['right click'] = ['failed']
+            # try:
+            #     checks['right click'] = ['suspicious', 'right click disabled'] if soup.find_all(oncontextmenu=True) else ['passed', 'right click not disabled']
+            # except:
+            #     checks['right click'] = ['failed']
 
             # try:
             #     checks['empty title'] = ['passed', "title is '{}'".format(get_title(soup))] if get_title(soup) else ['suspicious', 'title is empty']
@@ -219,8 +217,15 @@ def component_heuristics():
             except:
                 checks['domain in title'] = ['failed']
 
-            # to do -> check for pop up window
-
+            
+            pop_up_return = has_popup_window(url)
+            if isinstance(pop_up_return, int):
+                if pop_up_return > 1:
+                    checks['pop up window'] = ['suspicious', "website has {} pop up windows".format(pop_up_return)]
+                else:
+                    checks['pop up window'] = ['passed', "website doesn't have pop up windows"]
+            else:
+                checks['pop up window'] = ['failed']
 
 
 
@@ -267,9 +272,6 @@ def component_heuristics():
             #     checks['fake brand in path']  = ['failed'] 
 
             
-
-            # to do -> check google index
-            
             try:
                 if domain_registration_length(domain)>365:
                     checks['whois registered domain'] = ['passed', 'domain resolved with whois, response: \n {}'.format(str(whois_registered(domain))[:300]+'...')]
@@ -282,18 +284,28 @@ def component_heuristics():
                 checks['domain registration length'] = ['failed']
 
             try:
-                checks['google_index'] = ['passed', 'website is indexed by Google'] if google_index(url) else ['suspicious', 'website is not indexed by Google']
+                checks['google index'] = ['passed', 'website is indexed by Google'] if google_index(url) else ['suspicious', 'website is not indexed by Google']
             except:
-                checks['google_index']  = ['failed']
+                checks['google index']  = ['failed']
 
+            checks_copy = {}
 
-            # to do -> review verdict
+            for key, value in checks.items():
+                checks_copy[key] = value[0]
+            
+            phishing_score = verdict(checks_copy)
 
-            result = verdict(checks)
+            phishing_threshold = 0.4        # phishing_threshold ranges from 0 to 1
+
+            if phishing_score > phishing_threshold:
+                result = 'Fraud'
+            else:
+                result = 'Legitimate'
 
             return render_template("component_heuristics.html",
                     input_url = url, 
                     checks = checks,
+                    phishing_score = round(phishing_score, 3) ,
                     result = result)
         return render_template("component_heuristics.html",
             input_url = url,

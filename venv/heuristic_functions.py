@@ -11,16 +11,14 @@ from flask import Flask, render_template, request
 from bs4 import BeautifulSoup
 import requests
 import re
-import tldextract
 import validators
+from urllib.parse import urlparse, urljoin
 import urllib.parse
-from urllib.parse import urlparse
 import whois21
 import time
 from datetime import datetime
 from urllib.parse import urlencode
-
-
+from selenium import webdriver
 import signal
 
 # source https://data.mendeley.com/datasets/c2gw7fy2j4/3/files/01f5fa84-8d41-4692-9878-983f615ff1d7
@@ -111,39 +109,48 @@ def number_of_hyperlinks(soup):
     return len(soup.find_all(href=True)) 
 
 
-def get_number_of_hyperlinks(soup, domain):
-    hyperlinks = {'internal':0, 'external':0, 'null':0, 'uncategorized':0, 'total':0}
+def get_number_of_hyperlinks(soup, url):
+
+    hyperlinks = {'internal':0, 'external':0, 'null':0, 'total':0}
+
+    base_url = urlparse(url).netloc
+
     for el in soup.find_all(href=True):
+
         if el['href'] in Null_format:
             hyperlinks['null']+=1
-        elif domain in el['href']:
-            hyperlinks['internal']+=1
-        elif domain not in el['href']:
-            hyperlinks['external']+=1
         else:
-            hyperlinks['uncategorized']+=1
+            full_url = urljoin(url, el.get('href'))
+            parsed_url = urlparse(full_url)
+
+            if parsed_url.netloc == base_url:
+                hyperlinks['internal']+=1
+            else:
+                hyperlinks['external']+=1
+        
         hyperlinks['total']+=1
+    
     return hyperlinks
 
 
 def get_null_hyperlinks_ratio(soup, domain):
-    if get_number_of_hyperlinks(soup, domain)['total']:
-        return round(get_number_of_hyperlinks(soup, domain)['null'] / get_number_of_hyperlinks(soup, domain)['total'], 2)
-    else:
-        return None
+    hyperlinks = get_number_of_hyperlinks(soup, domain)
+    if hyperlinks['total']:
+        return round(hyperlinks['null'] / hyperlinks['total'], 2)
+    return None
 
 
 def get_internal_hyperlinks_ratio(soup, domain):
-    if get_number_of_hyperlinks(soup, domain)['total']:
-        return round(get_number_of_hyperlinks(soup, domain)['internal'] / get_number_of_hyperlinks(soup, domain)['total'], 2)
-    else:
-        return None
+    hyperlinks = get_number_of_hyperlinks(soup, domain)
+    if hyperlinks['total']:
+        return round(hyperlinks['internal'] / hyperlinks['total'], 2)
+    return None
 
 def get_external_hyperlinks_ratio(soup, domain):
-    if get_number_of_hyperlinks(soup, domain)['total']:
-        return round(get_number_of_hyperlinks(soup, domain)['external'] / get_number_of_hyperlinks(soup, domain)['total'], 2)
-    else:
-        return None
+    hyperlinks = get_number_of_hyperlinks(soup, domain)
+    if hyperlinks['total']:
+        return round(hyperlinks['external'] / hyperlinks['total'], 2)
+    return None
 
 
 def check_identity(url, soup):
@@ -327,6 +334,29 @@ def fake_brand_in_path(domain, path, brands):
     return None
 
 
+def has_popup_window(url):
+    try:
+        # Initialize a Selenium webdriver 
+        driver = webdriver.Chrome() 
+
+        # Open the website
+        driver.get(url)
+
+        # Check if there are any open pop-up windows
+        popup_handles = driver.window_handles
+        if len(popup_handles) > 1:
+            return(popup_handles)
+        else:
+            return(0)
+
+        # Close the browser
+        driver.quit()
+
+    except Exception as e:
+        return "An error occurred:", e
+
+
+
 
 # ------------------------------- domain ---------
 
@@ -397,24 +427,30 @@ def global_rank(domain):
 
 
 def verdict(checks):
+
     if 'passed' not in checks.get('Google Safe Brousing API'):
-        return 'Phishing'
+        return 1
+
+    phishing_score = 0
+
     if 'passed' not in checks.get('whois registered domain'):
-        return 'Phishing'
-    
-    # del checks('Google Safe Brousing API')
-    # del checks('whois registered domain')
-    # del checks('domain registration length')
-    # del checks('google_index')
+        phishing_score += 0.05
 
-    failed_checks = 0
-    total_checks = 0
+    if 'passed' not in checks.get('domain registration length'):
+        phishing_score += 0.05
 
-    # for content_check in checks:
-    #     if 'suspicious' in content_check:
-    #         failed_checks+=1
-    #     elif 'failed' in  
+    if 'passed' not in checks.get('google index'):
+        phishing_score += 0.05
 
-    
-    return 'Legitimate'
+    del checks['Google Safe Brousing API']
+    del checks['whois registered domain']
+    del checks['domain registration length']
+    del checks['google index']
 
+    for check in checks:
+        if 'passed' not in checks[check]:
+            phishing_score += 0.4/11
+            print(check + ' : '+ checks[check])
+            print('phishing_score:', phishing_score)
+
+    return phishing_score
