@@ -423,6 +423,22 @@ def global_rank(domain):
 
 
 
+def verdict_lite(checks):
+
+    if 'passed' not in checks.get('Google Safe Brousing API'):
+        return 1
+
+    phishing_score = 0
+
+    del checks['Google Safe Brousing API']
+
+    for check in checks:
+        if 'passed' not in checks[check]:
+            phishing_score += 1/len(checks)                      
+            print(check + ' : '+ checks[check])
+            print('phishing_score:', phishing_score)
+
+    return phishing_score
 
 
 
@@ -449,7 +465,7 @@ def verdict(checks):
 
     for check in checks:
         if 'passed' not in checks[check]:
-            phishing_score += 0.4/11
+            phishing_score += 0.4/len(checks)
             print(check + ' : '+ checks[check])
             print('phishing_score:', phishing_score)
 

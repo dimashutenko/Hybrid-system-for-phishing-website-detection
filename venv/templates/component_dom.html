@@ -57,14 +57,18 @@
               </thead>
               <tbody>
                 {% for key, value in checks.items() %}
-                  <tr>
+                  <tr data-toggle="tooltip" data-placement="right" title= "{{ value[1] }}">
                     <td>{{ key }}</td>
-                    <td>{{ value }}</td>
+                    <td>{{ value[0] }}</td>
                   </tr>
                 {% endfor %}
+                <tr style="border-top: solid 2px">
+                  <td><strong> Phishing score</strong></td>
+                  <td><strong>{{ phishing_score }} / 1</strong></td>
+                </tr>
               </tbody>
               <tfoot>
-                <tr>
+                <tr style="border-top: dotted 1px">
                   <td><strong>Verdict:</strong></td>
                   <td><strong>{{ result }}</strong></td>
                 </tr>
@@ -74,6 +78,7 @@
           {% else %}
               <p>  </p>
           {% endif %}
+
 
           <script>
 
